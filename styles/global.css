@@ -1,0 +1,83 @@
+[color-scheme="light"] {
+	--color-background: white;
+	--color-foreground: black;
+	--color-foreground-secondary: gray;
+	--color-link: blue;
+	--color-link-visited: #ff4dff;
+}
+
+[color-scheme="dark"] {
+	--color-background: black;
+	--color-foreground: white;
+	--color-foreground-secondary: gray;
+	--color-link: #266eff;
+	--color-link-visited: #b359b3;
+}
+
+body {
+	margin: auto;
+	font-family: Helvetica, Arial, sans-serif;
+	max-width: 70ch;
+	background: var(--color-background);
+	color: var(--color-foreground);
+	padding: 5mm;
+	line-height: 1.25;
+}
+
+main {
+	margin-top: 2ex;
+}
+
+a {
+	color: var(--color-link);
+	text-decoration: none;
+}
+
+a:visited {
+	color: var(--color-link-visited);
+}
+
+address {
+	font-style: inherit;
+}
+
+address a:visited {
+	color: var(--color-link);
+}
+
+h1 {
+	margin: 0;
+}
+
+h1 a:visited {
+	color: var(--color-link);
+}
+
+h2 {
+	font-size: inherit;
+}
+
+section *:first-child {
+	margin-bottom: 0;
+}
+
+section *:nth-child(2) {
+	margin-top: 0;
+}
+
+section *:nth-child(2) *:first-child {
+	margin-top: 0;
+}
+
+ul {
+	list-style-type: none;
+	padding-inline-start: 0;
+}
+
+ul.spaced li:not(:last-child) {
+	margin-bottom: 1ex;
+}
+
+time {
+	color: var(--color-foreground-secondary);
+}
