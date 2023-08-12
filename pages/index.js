@@ -45,7 +45,7 @@ export default function Home({ allPostsData }) {
         allPostsData.length != 0 ?
           <section>
             <h2>Blog</h2>
-            <ul class="spaced">
+            <ul className="spaced">
               {allPostsData.map(({ id, date, title }) => (
                 <li key={id}>
                   <PostLink id={id} title={title} date={date} />
