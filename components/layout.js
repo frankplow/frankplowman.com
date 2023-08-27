@@ -19,7 +19,7 @@ export default function Layout({ children, home }) {
       <header>
         {
           <>
-            <h1><Link href={`/`}>{title}</Link></h1>
+            <h1><Link className="no-visited-style" href={`/`}>{title}</Link></h1>
           </>
         }
       </header>

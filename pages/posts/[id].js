@@ -12,11 +12,11 @@ export default function Post({ postData }) {
         <title>{postData.title}</title>
       </Head>
       <article>
-        <Link href={`/posts/${postData.id}`}><h2>{postData.title}</h2></Link>
-        <div>
-          <Date dateString={postData.date} />
-        </div>
-        <div dangerouslySetInnerHTML={{ __html: postData.contentHtml }} />
+        <section>
+          <Link className="no-visited-style" href={`/posts/${postData.id}`}><h2>{postData.title}</h2></Link>
+            <Date dateString={postData.date} />
+          <div dangerouslySetInnerHTML={{ __html: postData.contentHtml }} />
+        </section>
       </article>
     </Layout>
   );
