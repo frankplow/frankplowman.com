@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import Link from 'next/link';
 
-import Layout, { siteTitle } from '../components/layout';
+import Layout, { title } from '../components/layout';
 import { getSortedPostsData } from '../lib/posts';
 import Date from '../components/date';
 import ContactInfo from '../components/contact_info';
@@ -29,7 +29,7 @@ export default function Home({ allPostsData }) {
   return (
     <Layout home>
       <Head>
-        <title>{siteTitle}</title>
+        <title>{title}</title>
       </Head>
       <aside>
         <section>
