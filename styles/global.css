@@ -11,7 +11,7 @@
 	--color-foreground: white;
 	--color-foreground-secondary: gray;
 	--color-link: #266eff;
-	--color-link-visited: #b359b3;
+	--color-link-visited: hsl(300deg, 50%, 55%);
 }
 
 [color-scheme="dark"] img.invertable {
