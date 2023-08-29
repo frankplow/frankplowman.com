@@ -6,13 +6,14 @@ import { getSortedPostsData } from '../lib/posts';
 import Date from '../components/date';
 import ContactInfo from '../components/contact_info';
 
-export async function getStaticProps() {
-  const allPostsData = getSortedPostsData();
-  return {
-    props: {
-      allPostsData,
-    },
-  };
+export function getStaticProps() {
+  return getSortedPostsData().then((allPostsData) => {
+    return {
+      props: {
+        allPostsData,
+      }
+    }
+  });
 }
 
 function PostLink({id, date, title}) {
