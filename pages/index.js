@@ -46,9 +46,9 @@ export default function Home({ allPostsData }) {
           <section>
             <h2>Blog</h2>
             <ul className="spaced list-style-none">
-              {allPostsData.map(({ id, date, title }) => (
+              {allPostsData.map(({ id, datePublished, title }) => (
                 <li key={id}>
-                  <PostLink id={id} title={title} date={date} />
+                  <PostLink id={id} title={title} date={datePublished} />
                 </li>
               ))}
             </ul>

@@ -2,9 +2,9 @@ import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
 
-const author = 'Frank Plowman';
+export const author = 'Frank Plowman';
 export const title = author;
-const description = 'Engineer interested in multimedia and embedded systems';
+export const description = 'Engineer interested in multimedia and embedded systems';
 
 export default function Layout({ children, home }) {
   return (

@@ -1,6 +1,7 @@
 ---
 title: 'GSoC 2023: VVC Decoder Improvements'
-date: '2023-08-27'
+datePublished: '2023-08-27'
+dateModified: '2023-08-29'
 ---
 This summer I contributed to [FFmpeg](https://ffmpeg.org/) as part of the Google Summer of Code. Specifically, I worked on FFmpeg's decoder for the Versatile Video Coding (VVC) codec, also known as H.266. It is the sucessor to HEVC/H.265 and AVC/H.264.
 
