@@ -27,10 +27,18 @@ function PostLink({id, date, title}) {
 }
 
 export default function Home({ allPostsData }) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": title,
+    "url": "https://www.frankplowman.com/",
+  }
+
   return (
     <Layout home>
       <Head>
         <title>{title}</title>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
       </Head>
       <aside>
         <section>
