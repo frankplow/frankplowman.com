@@ -10,8 +10,7 @@ export default function Layout({ children, home }) {
   return (
     <div>
       <Head>
-        <link rel="icon" href="favicon-light.svg" media="(prefers-color-scheme: light)" />
-        <link rel="icon" href="favicon-dark.svg" media="(prefers-color-scheme: dark)" />
+        <link rel="icon" href="favicon.svg" />
         <meta name="description" content={description} key="desc" />
         <meta name="author" content={author} />
         <meta name="og:title" content={title} />
