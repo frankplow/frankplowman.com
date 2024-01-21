@@ -17,28 +17,39 @@
     }
     @media (prefers-color-scheme: dark) {
       path {
-        stroke: #ffffff;
+         stroke: #ffffff;
       }
     }
   </style>
+  <g
+     id="layer4"
+     style="display:none">
+    <rect
+       style="fill:#000000;stroke-width:1"
+       id="rect954"
+       width="10"
+       height="10"
+       x="0"
+       y="0" />
+  </g>
   <g
      id="layer1"
      transform="translate(-40.705465,-59.281249)"
      style="display:inline">
     <g
        id="g1728"
-       transform="translate(-0.53828499,-0.35104646)"
-       style="fill:none;">
+       transform="matrix(1.0099368,0,0.22871118,1.0011524,-15.777046,-0.425528)"
+       style="fill:none;stroke-width:1;stroke-dasharray:none">
       <g
          id="g2512"
          transform="matrix(0.89919113,0,-0.02156685,0.89944168,6.2804935,6.4993152)"
-         style="fill:none;stroke-width:1.11195;stroke-dasharray:none">
+         style="fill:none;stroke-width:1;stroke-dasharray:none">
         <path
-           style="fill:none;stroke-width:1.11195;stroke-dasharray:none"
+           style="fill:none;stroke-width:1;stroke-dasharray:none"
            d="m 41.24375,69.632294 2,-9.999999 h 5 l -0.5,2.5 h -2.5 l -0.5,2.5 h 2.500001 l -0.5,2.5 H 44.24375 l -0.5,2.499999 z"
            id="path2506" />
         <path
-           style="fill:none;stroke-width:1.11195;stroke-dasharray:none"
+           style="fill:none;stroke-width:1;stroke-dasharray:none"
            d="m 48.24375,59.632295 h 2.499999 l -1.499999,7.5 h -2.5 z"
            id="path2508" />
       </g>
