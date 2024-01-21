@@ -3,8 +3,7 @@ import { Html, Head, Main, NextScript } from 'next/document'
 import { SetColorScheme } from '../lib/dark_mode.js'
 
 const SetColorSchemeStr = `(function() {
-    ${SetColorScheme.toString()}
-    SetColorScheme();
+    (${SetColorScheme.toString()})();
 })()
 `;
  
