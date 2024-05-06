@@ -1,0 +1,49 @@
+export const meta = {
+  title: 'LLDB showimg Plugin',
+  datePublished: '2024-05-06',
+  dateModified: '2023-05-06',
+  author: 'Frank Plowman'
+}
+
+import Post from '../../components/post'
+
+<Post id='lldb-showimg' meta={meta}>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/ofGgz5bwI34?si=FWXp3uHvmaP0_9gU" title="YouTube video player" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
+
+I've often found myself wanting to look at the video data in a buffer while debugging a codec, so I wrote a little LLDB plugin which lets you do just that.  You can download it [here](https://gist.github.com/frankplow/027f25c935ddc06f417e7cd07e1e5670).
+
+The plugin requires numpy and matplotlib to be installed in the Python environment LLDB uses.  You can find the Python environment LLDB uses from the LLDB command line using the interactive Python interpreter like so:
+```
+(lldb) script
+Python Interactive Interpreter. To exit, type 'quit()', 'exit()' or Ctrl-D.
+>>> import sys
+>>> sys.path
+```
+then install matplotlib and numpy using PIP or your package manager, depending on the environment.
+
+To load the plugin, run
+```
+(lldb) command script import lldb_showimg.py
+```
+from an LLDB shell.  You can add this command to `~/.lldbinit` and provide an absolute path instead in order to more permanently install the plugin.
+
+The plugin adds the `showimg` command, which you can use like so:
+```
+showimg <buf> <stride> <width> <height> <bitdepth>
+```
+where:
+* `<buf>` is an expression which evaluates to the address of the image buffer.
+* `<stride>` is the difference in address between two vertically adjacent pixels, typically the width of the buffer multiplied by the number of bytes used to store one sample.
+* `<width>` is the width in samples of the region you want to draw.
+* `<height>` is the height in samples of the region you want to draw.
+* `<bitdepth>` is the bitdepth of the data.
+
+As with normal LLDB commands, you can enclose these arguments with quotes to enable more complex expressions.  This is particularly handy when you want to do some pointer arithmetic to draw a patch of a buffer, for example:
+```
+(lldb) showimg "src + y_off * src_stride + (x_off << fc->ps.sps->pixel_shift)" src_stride block_w block_h 10
+```
+
+At the moment the script only supports a single component in planar format, but it shouldn't be too difficult to extend it to support other formats if you wish.
+
+</Post>
