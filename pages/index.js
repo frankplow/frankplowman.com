@@ -43,7 +43,7 @@ export default function Home({ allPostsData }) {
       <aside>
         <section>
           <h2>About</h2>
-          <p>Engineer interested in multimedia and embedded systems. Currently studying for an MEng in Electronic Engineering at the University of Leeds.</p>
+          <p>Engineer interested in multimedia and embedded systems. Currently working on post-VVC compression at Xiaomi.</p>
         </section>
         <section>
           <h2>Contact</h2>
