@@ -15,6 +15,7 @@ export default function Layout({ children, home }) {
         <meta name="author" content={author} />
         <meta name="og:title" content={title} />
         <meta name="og:description" content={description} />
+        <link href="https://www.frankplowman.com/feed.xml" rel="alternate" title="Frank Plowman's Blog" type="application/atom+xml" />
       </Head>
       <header>
         {
