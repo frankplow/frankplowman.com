@@ -53,7 +53,15 @@ export default function Home({ allPostsData }) {
       {
         allPostsData.length != 0 ?
           <section>
-            <h2>Blog</h2>
+            <h2>Blog
+              <a href="/feed.xml">
+                <svg style={{verticalAlign: "bottom", marginLeft: "2px", marginBottom: "2px"}} fill="var(--color-link)" height="20px" preserveAspectRatio="X200Y200 meet" version="1.1" id="Capa_1" viewBox="0 0 80 80">
+                  <circle cx="19.91" cy="58.23" r="6.86"></circle>
+                  <path d="M67.89,65.72H55.7A41.86,41.86,0,0,0,13.89,23.91V11.73A54.06,54.06,0,0,1,67.89,65.72Z"></path>
+                  <path d="M48.93,65.72H36.75A22.88,22.88,0,0,0,13.89,42.87V30.68A35.08,35.08,0,0,1,48.93,65.72Z"></path>
+                </svg>
+              </a>
+            </h2>
             <ul className="spaced list-style-none">
               {allPostsData.map(({ id, datePublished, title }) => (
                 <li key={id}>
