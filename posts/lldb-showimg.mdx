@@ -5,11 +5,7 @@ export const meta = {
   author: 'Frank Plowman'
 }
 
-import Post from '../../components/post'
-
-<Post id='lldb-showimg' meta={meta}>
-
-<iframe width="560" height="315" src="https://www.youtube.com/embed/ofGgz5bwI34?si=FWXp3uHvmaP0_9gU" title="YouTube video player" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/ofGgz5bwI34?si=FWXp3uHvmaP0_9gU" title="YouTube video player" frameBorder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen={true} webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
 
 I've often found myself wanting to look at the video data in a buffer while debugging a codec, so I wrote a little LLDB plugin which lets you do just that.  You can download it [here](https://gist.github.com/frankplow/027f25c935ddc06f417e7cd07e1e5670).
 
@@ -45,5 +41,3 @@ As with normal LLDB commands, you can enclose these arguments with quotes to ena
 ```
 
 At the moment the script only supports a single component in planar format, but it shouldn't be too difficult to extend it to support other formats if you wish.
-
-</Post>

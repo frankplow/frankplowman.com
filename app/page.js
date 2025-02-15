@@ -6,16 +6,6 @@ import { getSortedPostsData } from '../lib/posts';
 import Date from '../components/date';
 import ContactInfo from '../components/contact_info';
 
-export function getStaticProps() {
-  return getSortedPostsData().then((allPostsData) => {
-    return {
-      props: {
-        allPostsData,
-      }
-    }
-  });
-}
-
 function PostLink({id, date, title}) {
   return (
     <article>
@@ -26,7 +16,9 @@ function PostLink({id, date, title}) {
   );
 }
 
-export default function Home({ allPostsData }) {
+export default async function Index() {
+  const posts = await getSortedPostsData();
+
   const schema = {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -51,7 +43,7 @@ export default function Home({ allPostsData }) {
         </section>
       </aside>
       {
-        allPostsData.length != 0 ?
+        posts.length != 0 ?
           <section>
             <h2>Blog
               <a href="/feed.xml">
@@ -63,7 +55,7 @@ export default function Home({ allPostsData }) {
               </a>
             </h2>
             <ul className="spaced list-style-none">
-              {allPostsData.map(({ id, datePublished, title }) => (
+              {posts.map(({ id, datePublished, title }) => (
                 <li key={id}>
                   <PostLink id={id} title={title} date={datePublished} />
                 </li>

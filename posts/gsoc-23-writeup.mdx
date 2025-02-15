@@ -5,12 +5,6 @@ export const meta = {
   author: 'Frank Plowman'
 }
 
-import Post from '../../components/post'
-import Image from 'next/image'
-import interPredictionFaultExample from '../../public/ffvvc-inter-prediction-fault-example.png'
-
-<Post id='gsoc-23-writeup' meta={meta}>
-
 This summer I contributed to [FFmpeg](https://ffmpeg.org/) as part of the Google Summer of Code. Specifically, I worked on FFmpeg's decoder for the Versatile Video Coding (VVC) codec, also known as H.266. It is the sucessor to HEVC/H.265 and AVC/H.264.
 
 While contributing as part of the Google Summer of Code, the decoder had not yet been merged into FFmpeg master. We staged changes at [https://github.com/ffvvc/FFmpeg](https://github.com/ffvvc/FFmpeg) before submitting them to the FFmpeg-devel mailing list for review. Although not in mainline, the decoder was largely feature-complete.
@@ -36,7 +30,7 @@ Conformance to the standard is tested using a set of [example bitstreams and has
 
 While implementing the support for the higher bit-depths, I noticed all the tests for videos using 4:4:4 chroma subsampling were failing. This was curious as none of the changes I had made touched the subsampling really. The decoded videos had subtle but noticable colourful aberrations.
 
-<Image src={interPredictionFaultExample} alt="Example of VVC decoding failure showing coloured streaks" sizes="100vw" style={{ width: '100%', height: 'auto' }} />
+![Example of VVC decoding failure showing coloured streaks](/ffvvc-inter-prediction-fault-example.png)
 
 To help locate the bug, I used the YUV viewer's difference view to locate a particular coding tree unit (CTU) which exhibited the problem. I took note of its X and Y location and the output order of the problematic CTU. I then used these to step through FFVVC and VTM, using elaborate conditional breakpoints to inspect the workings of both while decoding that particular CTU. This revealed that the two decoders derived a different chroma intra prediction mode to one another.
 
@@ -44,5 +38,3 @@ Try as I might, when working through by hand I could not see why VTM was derivin
 
 ---
 I would like to say thank you to everyone at FFmpeg and in particular my mentor Nuo Mi for facilitating this project. I've thoroughly enjoyed it and learnt a lot.
-
-</Post>
