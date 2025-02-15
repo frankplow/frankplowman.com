@@ -1,6 +1,5 @@
-import Head from 'next/head';
 import Link from 'next/link';
-
+ 
 import Layout, { title } from '../components/layout';
 import { getSortedPostsData } from '../lib/posts';
 import Date from '../components/date';
@@ -16,22 +15,30 @@ function PostLink({id, date, title}) {
   );
 }
 
+export const metadata = {
+  title: "Frank Plowman",
+  description: "Engineer interested in multimedia and embedded systems",
+};
+
 export default async function Index() {
   const posts = await getSortedPostsData();
-
+  
   const schema = {
     "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": title,
+    "@type": "Person",
+    "name": metadata.title,
+    "description": metadata.description,
     "url": "https://www.frankplowman.com/",
+    "jobTitle": "Staff Engineer - Video Standards",
+    "worksFor": "Xiaomi",
   }
 
   return (
     <Layout home>
-      <Head>
-        <title>{title}</title>
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
-      </Head>
+      <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+        />
       <aside>
         <section>
           <h2>About</h2>
