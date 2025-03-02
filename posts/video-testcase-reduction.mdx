@@ -1,0 +1,109 @@
+export const meta = {
+  title: 'Video Testcase Reduction',
+  datePublished: '2025-03-02',
+  dateModified: '2025-03-02',
+  author: 'Frank Plowman'
+}
+
+You learn quite quickly — most likely through a stern stackoverflow reply or IRC message — that providing a minimal example of a problem is essential to seeking technical assistance.  Minimal, self-contained examples are comprehensible and not prone to misinterpretation.  Aside from asking others for help, minimising tests is also often the first step in fixing a problem: locating where in a piece of software your issue may lie.  There's even a [wikipedia page](https://en.wikipedia.org/wiki/Minimal_reproducible_example) for the concept.
+
+Most often, minimal examples are discussed in the context of source code.  In this context, the minimisation process may be performed simply by hacking parts of the example off and testing whether the issue still reproduces, directed by your theory of what the issue may be.  What if your example is not a snippet of code, however, but something much larger and which cannot easily be manipulated by hand: a video bitstream.
+
+You could try a sort of ground-up approach, where you try to construct simpler bitstreams which exhibit the same issue as your problematic bitstream.  For example, if you have the source video data and encoder configuration, you could try encoding fewer frames, disabling coding tools or cropping the image to a smaller region.  This approach is fraught with complications however:
+* Encoding a new bitstream can be slow.
+* The space of possible encoder configurations and image characteristics is large.
+* You don't always get nice error messages when video decoding goes wrong like you do in code, so it is difficult to make informed decisions as to how to minimise the example.
+* Particularly for complex modern codecs with many conditions, the issue may require very particular circumstances in order to reproduce.
+* You may not know how a bitstream was encoded or have the source data available.
+
+Better, then, would be to take your problematic bitstream and shrink it, in a top-down approach more akin to what we do with code.  Trying to do so by hand is mechanically difficult and does not solve all the issues outlined regarding the ground-up approach.  Instead, we must turn to automated tools to take on the task.  It turns out there are a few automated testcase reducers, predominantly developed for the purpose of compiler development.  [C-reduce](https://github.com/csmith-project/creduce) seems to be the most popular testcase reducer out there although I use [shrinkray](https://github.com/DRMacIver/shrinkray) for reasons I will get to shortly.
+
+---
+# Automated Testcase Reduction
+
+To use a testcase reducer, you must first write an *interestingness test*.  This is a program/script which is executed with a testcase as input and which returns whether the testcase is interesting, where "interesting" generally means fails in the same mode as your initial testcase.  Your initial testcase should be interesting, then the reducer will try to make the testcase smaller in various ways and check if the testcase is still interesting after the reduction.  If the result is still interesting, then the reducer will try to reduce this new, smaller testcase, and so on and so forth until the testcase cannot be reduced further.  As an example, some time ago a fuzzer I run found a crash in the FFmpeg VVC decoder.  The testcase produced by the fuzzer was 84kiB and caused a dereference of a NULL pointer.  To catch the NULL pointer dereference, the software is compiled using [AddressSanitizer](https://github.com/google/sanitizers/wiki/addresssanitizer).  In shrinkray, your interestingness test should return `0` if the testcase is interesting and some non-zero value otherwise.  In this case, the interestingness test was as simple as
+```
+#!/usr/bin/env bash
+exe=/Users/frank/Dev/ffmpeg/tools/target_dec_vvc_fuzzer
+! "$exe" $1 >/dev/null 2>&1
+```
+Note that writing interestingness tests is not always so simple.  In this case it is made much easier by the fact that the FFmpeg fuzzer binaries return `0` regardless of whether or not the input is a valid bitstream.  In the case you are reducing a test for a more typical application, your interestingness test will have to be more discerning.  For example, if this was instead targeting the ffmpeg CLI tool, the interestingness test might look something like
+```
+#!/usr/bin/env bash
+exe=/Users/frank/Dev/ffmpeg/ffmpeg
+$exe -i $1 -f null - >/dev/null 2>&1
+ret=$?
+test $ret -eq 134
+```
+distinguishing a SIGABRT (134) produced by AddressSanitizer from an AVERROR_INVALID_DATA or other uninteresting non-zero exit codes.  With the interestingness script written, we can run the reducer:
+```
+$ shrinkray --input-type=arg shrinkray-test.sh testcase.vvc --timeout 10
+```
+and just 50 seconds later we are left with a testcase which is only 93 bytes long: a 99.9% reduction in size!  The vast majority of the superfluous data is gone and so the resulting testcase is much easier to debug, as well as much faster to run in a debugger.
+
+These example interestingness tests check for crashes while decoding a bitstream, but you could also write interestingness tests which check for the other broad category of decoder errors: mismatches.  Something along the lines of
+```
+#!/usr/bin/env bash
+
+ffmpeg=/Users/frank/Dev/ffmpeg/ffmpeg
+"$ffmpeg" -i "$1" -f rawvideo ffmpeg.yuv >/dev/null 2>&1
+ffmpeg_ret=$?
+if [ "$ffmpeg_ret" -ne 0 ]; then exit 1; fi
+
+vtm=/Users/frank/Dev/vtm/bin/DecoderApp
+"$vtm" -b "$1" -o vtm.yuv >/dev/null 2>&1
+vtm_ret=$?
+if [ "$vtm_ret" -ne 0 ]; then exit 1; fi
+
+! diff ffmpeg.yuv vtm.yuv
+```
+Here, our definition of what constitutes an "interesting" test is quite different.  We explicitly ignore encoder and decoder crashes, and only return `0` for testcases which decode both using our software and the reference software, but decode to different things.  There is a skill in crafting the right interestingness test for your particular problem.
+
+---
+# Format-Aware Reduction
+But we can still do better!  While the initial testcase above was not small at 94kiB, testcases may be significantly larger and take a long time to reduce.  Neglecting the overhead of the reducer, the rate of reduction is
+```
+reductions per second = interestingness test executions per second
+                      * probability of successful reduction
+```
+Therefore we can improve the rate of reduction either by a) making the interestingness test run faster, or b) increasing the probability a reduction will be successful.  In practice the run time of the interestingness test will be dominated by the run time of the software under test, therefore a) means optimising the software under test.  This is likely to be a significant challenge, and so we are left with b).
+
+The probability of a particular reduction being effective can be quite low for video data.  This is in large part due to the fact that these testcase reducers are written for the purposes of compiler development, where they operate on source code rather than on binary data.  Many of the more sophisticated reduction techniques are therefore rendered ineffective when operating on binary data and the reducer essentially operates by deleting random chunks of data.  We can improve this by making the reducer aware of the format of the data it's reducing.
+
+Returning to the example above, the initial fuzzed testcase is an Annex B VVC bitstream.  Annex B is a simple format for the storage of H.264/HEVC/VVC bitstreams.  In Annex B bitstreams the Network Abstraction Layer Units (NALUs), which are the basic units of the bitstream at a high level, are concatenated and delimited using a special code.  If this code appears inside the body of a particular NALU, there is a special sequence to escape it.  In [my fork of shrinkray](https://github.com/frankplow/shrinkray/tree/nalu-deletion), I have implemented a specialised reduction pass for Annex B bitstreams.  It locates the byte ranges corresponding to each NALU by searching for occurences of the NALU start code.  It then tries to delete each of these NALUs, starting with the final NALU as later NALUs may refer to earlier NALUs but not the other way round.  Here is the implementation:
+```python
+def find_start_codes(data: bytes, start_code: bytes) -> list[int]:
+    """Return a list of indexes into data at which the given start_code occurs."""
+    start_codes = [0]
+    while (pos := data.find(start_code, start_codes[-1] + 1)) != -1:
+        start_codes.append(pos)
+    return start_codes
+
+def find_nalus(data: bytes) -> list[int]:
+    """Return a list of indexes into data which identify the start of NAL units.
+       The start of a NALU is indicated by a start code.  The NAL unit may also
+       have some leading whitespace."""
+    start_code_prefix = b"\x00\00\01"
+    nalu_starts = []
+    for pos in find_start_codes(data, start_code_prefix)[1:]:
+        while pos >= 0 and data[pos] == 0x00:
+            pos -= 1
+        pos += 1
+        nalu_starts.append(pos)
+    return nalu_starts
+
+async def nalu_deletion(problem: ReductionProblem[bytes]) -> None:
+    nalu_starts = find_nalus(problem.current_test_case)
+    nalu_ends = nalu_starts[1:] + [len(problem.current_test_case)]
+    nalus = zip(nalu_starts, nalu_ends)
+    spans = [[nalu] for nalu in nalus]
+    spans.reverse()
+    await apply_patches(problem, Cuts(), spans)
+```
+You may notice this is very short.  This is the main reason I opted to use shrinkray: while remaining fast it is cleanly-written and significantly simpler than other testcase reducers and thus easier to modify to add custom reduction passes.  It would be great to see testcase reducers with support for dynamically-linked custom passes, similar to as is common for custom mutators in fuzzers.  With this specialised reduction pass implemented, the time taken to shrink the testcase goes from around 50s to around 20s, a 2.5 times speedup.
+
+Speedups aren't the only thing that format-aware reduction may help with however.  For Annex B bitstreams, the specialised reduction pass didn't do anything fundamentally different to the format-agnostic reduction passes: it tried deleting some spans of bytes.  There are other binary formats where such simple reductions will not be effective, and knowledge of the format is necessary to perform *any* reduction.  Take for instance MP4/ISOBMFF.  At the top level an MP4 file consists of a number of units of data, in this case called boxes, concatenated together.  Rather than being delimited by a special sequence of bytes like Annex B bitstreams, however, MP4 boxes contain a length field as part of a common header.  In other words, MP4 is to Pascal-style strings what Annex B is to C-style strings.  Trying to delete part of an MP4 box without correspondingly updating its length field will render the remainder of the file unreadable and likely to be uninteresting.  Really the only way to reduce a file with dependencies within its binary representation such as this, is for the reducer to be aware of its format.
+
+---
+
+And there you have it!  A bit of an intro to automated testcase reduction, with a particular focus on how it can be applied to video and binary data at large, which is an area in which I think the technique is underutilised.  If you got this far, I hope you enjoyed and thank you very much for reading `<3`
