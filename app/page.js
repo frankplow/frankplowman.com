@@ -22,15 +22,26 @@ export const metadata = {
 
 export default async function Index() {
   const posts = await getSortedPostsData();
-  
+
   const schema = {
     "@context": "https://schema.org",
-    "@type": "Person",
+    "@type": "WebSite",
     "name": metadata.title,
-    "description": metadata.description,
     "url": "https://www.frankplowman.com/",
-    "jobTitle": "Staff Engineer - Video Standards",
-    "worksFor": "Xiaomi",
+    "about": {
+      "@type": "Person",
+      "name": metadata.title,
+      "description": metadata.description,
+      "jobTitle": "Staff Engineer - Video Standards",
+      "worksFor": "Xiaomi",
+    },
+    "author": {
+      "@type": "Person",
+      "name": metadata.title,
+      "description": metadata.description,
+      "jobTitle": "Staff Engineer - Video Standards",
+      "worksFor": "Xiaomi",
+    }
   }
 
   return (
