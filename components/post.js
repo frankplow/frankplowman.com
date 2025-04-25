@@ -8,6 +8,7 @@ export default function Post({ children, id, meta }) {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     "name": meta.title,
+    "headline": meta.title,
     "url": `https://www.frankplowman.com/posts/${id}`,
     "author": [{
       "@type": "Person",
