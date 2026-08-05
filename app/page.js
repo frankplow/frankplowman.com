@@ -32,15 +32,11 @@ export default async function Index() {
       "@type": "Person",
       "name": metadata.title,
       "description": metadata.description,
-      "jobTitle": "Staff Engineer - Video Standards",
-      "worksFor": "Xiaomi",
     },
     "author": {
       "@type": "Person",
       "name": metadata.title,
       "description": metadata.description,
-      "jobTitle": "Staff Engineer - Video Standards",
-      "worksFor": "Xiaomi",
     }
   }
 
@@ -53,7 +49,7 @@ export default async function Index() {
       <aside>
         <section>
           <h2>About</h2>
-          <p>Engineer interested in multimedia and embedded systems. Currently working on post-VVC compression at Xiaomi.</p>
+          <p>Engineer interested in multimedia and embedded systems. Based in London.</p>
         </section>
         <section>
           <h2>Contact</h2>
